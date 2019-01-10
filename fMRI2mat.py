@@ -16,32 +16,31 @@ class Converter:
 
     def run(self):
         typestr = ".%s" % t_in
-        for root, dirs, files in os.walk(input):
-            for d in dirs:
-                structure = ''
-                if self.s:
-                    structure = os.path.join(output, root[len(input):])
-                    if ~os.path.isdir(structure):
-                        os.mkdir(structure)
-                for fn in files:
-                    if typestr in fn:
-                        print('Converting %s' % fn)
-                        outpath = output
-                        if self.s:
-                            outpath = structure
-                        outstr = os.path.join(outpath, '%s.pkl' % fn[0:-4])
-                        f = open(outstr, 'wb')
-                        img = nib.load(os.path.join(root, fn))
-                        if t_in == 'nii':
-                            #get nifti image arrays
-                            pass
-                        else:
-                            arrs = img.darrays
-                            for v in arrs:
-                                a = np.array(v.data)
-                                pkl.dump(a, f)
-                            f.close()
-                            print('Wrote data to %s' % outstr)
+        for root, dirs, files in os.walk(self.input):
+            structure = ''
+            if self.s:
+                structure = os.path.join(self.output, root[len(self.input)+1:])
+                if not os.path.isdir(structure):
+                    os.mkdir(structure)
+            for fn in files:
+                if typestr in fn:
+                    print('Converting %s' % fn)
+                    outpath = output
+                    if self.s:
+                        outpath = structure
+                    outstr = os.path.join(outpath, '%s.pkl' % fn[0:-4])
+                    f = open(outstr, 'wb')
+                    img = nib.load(os.path.join(root, fn))
+                    if self.t_in == 'nii':
+                        #get nifti image arrays
+                        pass
+                    else:
+                        arrs = img.darrays
+                        for v in arrs:
+                            a = np.array(v.data)
+                            pkl.dump(a, f)
+                        f.close()
+                        print('Wrote data to %s' % outstr)
 
 #entry point
 if __name__ == "__main__":
@@ -50,7 +49,7 @@ if __name__ == "__main__":
     parser.add_argument('--output', help='output path')
     parser.add_argument('--t_in', help='input type (nii, gii)')
     parser.add_argument('--t_out', help='output type (np)')
-    parser.add_argument('--struct', help='maintain folder structure from input path')
+    parser.add_argument('--struct', help='maintain folder structure from input path', action='store_true')
     args = parser.parse_args()
 
     print('--------------------------------------------------\n')
