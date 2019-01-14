@@ -32,8 +32,11 @@ class Converter:
                     f = open(outstr, 'wb')
                     img = nib.load(os.path.join(root, fn))
                     if self.t_in == 'nii':
-                        #get nifti image arrays
-                        pass
+                        #get nifti image array
+                        arr = img.get_data()
+                        pkl.dump(arr, f)
+                        f.close()
+                        print('Wrote data tp %s' % outstr)
                     else:
                         arrs = img.darrays
                         for v in arrs:
